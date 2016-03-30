@@ -1,4 +1,7 @@
-/vendor/
+vendor
+build
+
+composer.lock
 
 # phpstorm project files
 .idea
@@ -16,3 +19,6 @@ Thumbs.db
 
 # Mac DS_Store Files
 .DS_Store
+
+# tests variables
+tests/variables.local.php
