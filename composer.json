@@ -1,0 +1,28 @@
+{
+    "name": "kalyabin/yii2-hg-view",
+    "description": "Yii2 extension to view and to control Mercurial repositories",
+    "type": "extension",
+    "license": "BSD-3-Clause",
+    "version": "dev-master",
+    "reference": "d6814165db8839ecbfed983e82268531",
+    "keywords": [
+        "yii2", "extension", "hg", "mercurial", "repository"
+    ],
+    "authors": [
+        {
+            "name": "Max Kalyabin",
+            "email": "maksim@kalyabin.ru"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.4.0",
+        "yiisoft/yii2": "2.*",
+        "kalyabin/yii2-vcs-common": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "hgView\\": ""
+        }
+    }
+}
