@@ -4,7 +4,7 @@
     "type": "extension",
     "license": "BSD-3-Clause",
     "version": "dev-master",
-    "reference": "d6814165db8839ecbfed983e82268531",
+    "reference": "d6814165db8839ecbfed983e82268532",
     "keywords": [
         "yii2", "extension", "hg", "mercurial", "repository"
     ],
