@@ -51,9 +51,7 @@ class HgWrapper extends BaseWrapper
      */
     public function getRepository($dir)
     {
-        /**
-         * @todo create method logic
-         */
+        return new Repository($dir, $this);
     }
 }
 

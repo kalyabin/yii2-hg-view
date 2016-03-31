@@ -106,4 +106,36 @@ class CaseWrapperTest extends PHPUnit_Framework_TestCase
         $this->assertNotEmpty($stringResult);
         $this->assertNotEmpty($arrayResult);
     }
+
+    /**
+     * Tests repository getter
+     *
+     * @param HgWrapper $wrapper
+     * @depends testConstructor
+     */
+    public function testRepository(HgWrapper $wrapper)
+    {
+        $cmd = $this->variables['availCmd'];
+        $repoPath = $this->variables['availRepository'];
+
+        $wrapper->setCmd($cmd);
+        $repository = $wrapper->getRepository($repoPath);
+        $this->assertInstanceOf(Repository::className(), $repository);
+    }
+
+    /**
+     * Tests repository getter error
+     *
+     * @param HgWrapper $wrapper
+     * @depends testConstructor
+     * @expectedException VcsCommon\exception\CommonException
+     */
+    public function testRepositoryException(HgWrapper $wrapper)
+    {
+        $cmd = $this->variables['availCmd'];
+        $repoPath = $this->variables['errorRepository'];
+
+        $wrapper->setCmd($cmd);
+        $wrapper->getRepository($repoPath);
+    }
 }
