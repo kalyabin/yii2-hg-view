@@ -54,4 +54,3 @@ class HgWrapper extends BaseWrapper
         return new Repository($dir, $this);
     }
 }
-

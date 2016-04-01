@@ -102,6 +102,90 @@ class CaseRepositoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Tests history getter
+     *
+     * @return Commit[]
+     */
+    public function testHistory()
+    {
+        $history = $this->repository->getHistory(10, 5);
+        $this->assertNotEmpty($history);
+        $this->assertContainsOnlyInstancesOf(Commit::className(), $history);
+        $this->assertCount(10, $history);
+
+        return $history;
+    }
+
+    /**
+     * Tests history getter for sepcified path
+     */
+    public function testPathHistory()
+    {
+        $history = $this->repository->getHistory(2, 0, $this->variables['pathHistory']);
+        $this->assertNotEmpty($history);
+        $this->assertContainsOnlyInstancesOf(Commit::className(), $history);
+        $this->assertCount(2, $history);
+
+        foreach ($history as $commit) {
+            /* @var $commit Commit */
+            $commit = $this->repository->getCommit($commit->getId());
+            $this->assertNotEmpty($commit->getChangedFiles());
+            $hasCurrentFile = false;
+            foreach ($commit->getChangedFiles() as $file) {
+                /* @var $file File */
+                $this->assertInstanceOf(File::className(), $file);
+                if ($this->variables['pathHistory'] === $file->getPathname()) {
+                    $hasCurrentFile = true;
+                }
+            }
+            $this->assertTrue($hasCurrentFile);
+        }
+
+        return $history;
+    }
+
+    /**
+     * Tests history wrong params
+     *
+     * @expectedException \VcsCommon\exception\CommonException
+     */
+    public function testHistoryExceptionWrongParams()
+    {
+        $history = $this->repository->getHistory('a', 'b');
+        $this->assertInternalType('array', $history);
+        $this->assertEmpty($history);
+    }
+
+    /**
+     * Test commit exception
+     *
+     * @expectedException \VcsCommon\exception\CommonException
+     */
+    public function testCommitException()
+    {
+        $this->repository->getCommit('xxx');
+    }
+
+    /**
+     * Tests graph history
+     */
+    public function testGraphHistory()
+    {
+        $graph = $this->repository->getGraphHistory(10, 1);
+        $this->assertInstanceOf(Graph::className(), $graph);
+        $this->assertContainsOnlyInstancesOf(Commit::className(), $graph->getCommits());
+        $this->assertEquals(10, count($graph->getCommits()));
+        $this->assertGreaterThanOrEqual(0, $graph->getLevels());
+        $this->assertLessThan(9, $graph->getLevels());
+        foreach ($graph->getCommits() as $commit) {
+            /* @var $commit Commit */
+            $this->assertInstanceOf(Commit::className(), $commit);
+            $this->assertGreaterThanOrEqual(0, $commit->graphLevel);
+            $this->assertLessThanOrEqual($graph->getLevels(), $commit->graphLevel);
+        }
+    }
+
+    /**
      * Tests ignored and not ignored files
      */
     public function testIgnore()
