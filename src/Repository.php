@@ -59,7 +59,7 @@ class Repository extends BaseRepository
         // get all opened branches
         $result = $this->wrapper->execute(['branches'], $this->projectPath, true);
 
-        $pattern = '#^([^\s]+)[\s]+([0-9]+)\:[\d]+#iU';
+        $pattern = '#^([^\s]+)[\s]+([0-9]+)\:[\w]+#iU';
 
         foreach ($result as $row) {
             $matches = [];
@@ -309,10 +309,87 @@ class Repository extends BaseRepository
         return $ret;
     }
 
+    /**
+     * Returns valid revision number:
+     *
+     * - if rev === tip - returns it;
+     * - else returns valid integer;
+     *
+     * @param string|integer $rev Revision number
+     * @return string|integer valid revision number
+     */
+    protected function getValidRevisionNumber($rev)
+    {
+        return $rev === 'tip' ? $rev : (int) $rev;
+    }
+
+    /**
+     * Returns diff by specific command line params.
+     *
+     * Can receive everybody params for command line like this:
+     *
+     * ```php
+     * $wrapper = new HgWrapper();
+     * $repo = $wrapper->getRepository('/path/to/repository');
+     *
+     * // get revision diff:
+     * print_r($repo->getDiff('commit', <rev>));
+     *
+     * // get commit compare
+     * print_r($repo->getDiff('compare', <first_rev>, <last_rev>);
+     *
+     * // get file diff
+     * print_r($repo->getDiff('file', '/path/to/file');
+     *
+     * // get file diff for specific revision
+     * print_r($repo->getDiff('file', '/path/to/file', <rev>);
+     *
+     * // get full repo diff
+     * print_r($repo->getDiff('repository');
+     * ```
+     *
+     * @see \kalyabin\VcsCommon\BaseRepository::getDiff()
+     * @return string[] line-by-line diffs
+     * @throws CommonException
+     */
     public function getDiff()
     {
-        /**
-         * @todo write a logic
-         */
+        $command = ['diff', '--git'];
+
+        $type = func_num_args() >= 1 ? func_get_arg(0) : null;
+        $arg1 = func_num_args() >= 2 ? func_get_arg(1) : null;
+        $arg2 = func_num_args() >= 3 ? func_get_arg(2) : null;
+
+        if ($type === self::DIFF_COMMIT && !is_null($arg1)) {
+             // commit diff command requires second param a revision number
+            $command[] = '-c';
+            $command[] = $this->getValidRevisionNumber($arg1);
+        }
+        else if ($type === self::DIFF_COMPARE && !is_null($arg1) && !is_null($arg2)) {
+            // commits compare requires second and third params a revision numbers (first revision and last revision to compare)
+            $command[] = '-r';
+            $command[] = $this->getValidRevisionNumber($arg1) . ':' . $this->getValidRevisionNumber($arg2);
+        }
+        else if ($type == self::DIFF_PATH && is_string($arg1)) {
+            // path diff requires second param a path of project file (or directory)
+            // if this is not a valid path - HgWrapper throws CommonException
+            if (!is_null($arg2)) {
+                // specific revision number
+                $command[] = '-c';
+                $command[] = $this->getValidRevisionNumber($arg2);
+            }
+            // project path to compare
+            $command[] = escapeshellcmd($arg1);
+        }
+        else if ($type == self::DIFF_REPOSITORY) {
+            // full repo diff
+            // nobody extended params in this case
+        }
+        else {
+            // unknown params
+            throw new CommonException('Type a valid command');
+        }
+
+        return $this->wrapper->execute($command, $this->projectPath, true);
     }
 }

@@ -11,13 +11,13 @@ return [
         'errorRepository' => '/tmp',
     ],
     'repository' => [
-        'commitDiff' => '1244f5a7409604e4027e9d97538f65d32767fb14',
+        'commitDiff' => 'tip',
         'commitCompare' => [
-            'a580783d8c3eb462c730faf1da73a8ce0d31d470',
-            '1244f5a7409604e4027e9d97538f65d32767fb14',
+            '2200',
+            'tip',
         ],
         'commitFileDiff' => [
-            '1244f5a7409604e4027e9d97538f65d32767fb14', 'Commit.php',
+            'tip', 'test.txt',
         ],
         'pathHistory' => '/path/to/single/file',
         'ignoredPath' => '/path/to/ignored/file',
