@@ -26,9 +26,36 @@ class Commit extends BaseCommit
      */
     public function getDiff($file = null)
     {
-        /**
-         * @todo write a logic
-         */
+        $previewFile = [];
+        $ret = [];
+
+        $appendFileDiff = function() use (&$previewFile, &$ret) {
+            if (!empty($previewFile)) {
+                $ret[] = new Diff($previewFile);
+                $previewFile = [];
+            }
+        };
+
+        $fullDiff = [];
+        if (!is_null($file)) {
+            $fullDiff = $this->repository->getDiff(Repository::DIFF_PATH, $file, $this->id);
+        }
+        else {
+            $fullDiff = $this->repository->getDiff(Repository::DIFF_COMMIT, $this->id);
+        }
+
+        foreach ($fullDiff as $row) {
+            if (StringHelper::startsWith($row, 'diff')) {
+                // the new file diff, append to $ret
+                $appendFileDiff();
+            }
+            $previewFile[] = $row;
+        }
+
+        // append last file diff to full array
+        $appendFileDiff();
+
+        return $ret;
     }
 
     /**
@@ -36,9 +63,10 @@ class Commit extends BaseCommit
      */
     public function getRawFile($filePath)
     {
-        /**
-         * @todo write a logic
-         */
+        $params = [
+            'cat', '--rev' => $this->id, escapeshellcmd($filePath),
+        ];
+        return $this->repository->getWrapper()->execute($params, $this->repository->getProjectPath());
     }
 
     /**
@@ -46,8 +74,16 @@ class Commit extends BaseCommit
      */
     public function getPreviousRawFile($filePath)
     {
-        /**
-         * @todo write a logic
-         */
+        if (!empty($this->parentsId)) {
+            // get first parent to view old version of file
+            $parentId = reset($this->parentsId);
+            $params = [
+                'cat', '--rev' => $parentId, escapeshellcmd($filePath),
+            ];
+            return $this->repository->getWrapper()->execute($params, $this->repository->getProjectPath());
+        }
+
+        // if hasnt parents - return as empty file
+        return '';
     }
 }

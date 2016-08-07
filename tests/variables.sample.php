@@ -24,10 +24,9 @@ return [
         'notIgnoredPath' => '/path/to/not/ignored/file',
     ],
     'commit' => [
-        'diff' => '1244f5a7409604e4027e9d97538f65d32767fb14',
-        'rawFile' => [
-            'commitId' => '95c5af88b6b83e66f67e09962d92a289d7916a18',
-            'file' => 'Directory.php'
-        ],
+        'diff' => '1194',
+        'rawFile' => 'Directory.php',
+        'deletedCommitId' => '1183',
+        'deletedRawFile' => 'personal/ordercheck/cancel/index.php',
     ],
 ];
