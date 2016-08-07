@@ -138,7 +138,7 @@ class Repository extends BaseRepository
     public function getCommit($id)
     {
         $command = [
-            'log', '--rev' => escapeshellcmd($id), '--template' => '"' . self::LOG_FORMAT . '"',
+            'log', '--encoding' => 'utf-8', '--rev' => escapeshellcmd($id), '--template' => '"' . self::LOG_FORMAT . '"',
         ];
 
         $result = $this->wrapper->execute($command, $this->projectPath, true);
@@ -157,7 +157,7 @@ class Repository extends BaseRepository
 
         // get changed files
         $files = $this->wrapper->execute([
-            'status', '--change' => escapeshellcmd($commit->getId()),
+            'status', '--encoding' => 'utf-8', '--change' => escapeshellcmd($commit->getId()),
         ], $this->projectPath, true);
         foreach ($files as $file) {
             $pieces = preg_split('#[\s]+#', trim($file), 2);
@@ -199,7 +199,7 @@ class Repository extends BaseRepository
     {
         if ($skip) {
             $currentRevisionNumber = (int) $this->wrapper->execute([
-                'parent', '--template' => '"{rev}"',
+                'parent', '--encoding' => 'utf-8', '--template' => '"{rev}"',
             ], $this->projectPath);
             if ($currentRevisionNumber <= $skip) {
                 return -1;
@@ -225,7 +225,7 @@ class Repository extends BaseRepository
         }
 
         $command = [
-            'log',
+            'log', '--encoding' => 'utf-8',
         ];
 
         // detect begin revision number
@@ -281,7 +281,7 @@ class Repository extends BaseRepository
         $rawHistory = $this->getHistory($limit, $skip);
 
         $command = [
-            'log', '-G', '--template' => ' ', '--limit' => (int) $limit,
+            'log', '--encoding' => 'utf-8', '-G', '--template' => ' ', '--limit' => (int) $limit,
         ];
 
         // detect begin revision number
@@ -354,7 +354,7 @@ class Repository extends BaseRepository
      */
     public function getDiff()
     {
-        $command = ['diff', '--git'];
+        $command = ['diff', '--git', '--encoding' => 'utf-8',];
 
         $type = func_num_args() >= 1 ? func_get_arg(0) : null;
         $arg1 = func_num_args() >= 2 ? func_get_arg(1) : null;

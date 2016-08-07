@@ -16,8 +16,6 @@ class Branch extends BaseBranch
      */
     public function getHeadCommit()
     {
-        /**
-         * @todo write a logic
-         */
+        return $this->repository->getCommit($this->head);
     }
 }

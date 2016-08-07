@@ -64,7 +64,7 @@ class Commit extends BaseCommit
     public function getRawFile($filePath)
     {
         $params = [
-            'cat', '--rev' => $this->id, escapeshellcmd($filePath),
+            'cat', '--encoding' => 'utf-8', '--rev' => $this->id, escapeshellcmd($filePath),
         ];
         return $this->repository->getWrapper()->execute($params, $this->repository->getProjectPath());
     }
@@ -78,7 +78,7 @@ class Commit extends BaseCommit
             // get first parent to view old version of file
             $parentId = reset($this->parentsId);
             $params = [
-                'cat', '--rev' => $parentId, escapeshellcmd($filePath),
+                'cat', '--encoding' => 'utf-8', '--rev' => $parentId, escapeshellcmd($filePath),
             ];
             return $this->repository->getWrapper()->execute($params, $this->repository->getProjectPath());
         }
