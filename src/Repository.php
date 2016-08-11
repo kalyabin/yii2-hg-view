@@ -392,4 +392,12 @@ class Repository extends BaseRepository
 
         return $this->wrapper->execute($command, $this->projectPath, true);
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getBinaryFile($commitId, $filePath, $streamHandler)
+    {
+        throw new CommonException('Unsupported');
+    }
 }
