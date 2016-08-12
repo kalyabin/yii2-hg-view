@@ -72,6 +72,14 @@ class Commit extends BaseCommit
     /**
      * @inheritdoc
      */
+    public function getRawBinaryFile($filePath, $streamHandler)
+    {
+        throw new CommonException('This function is not supported');
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getPreviousRawFile($filePath)
     {
         if (!empty($this->parentsId)) {
