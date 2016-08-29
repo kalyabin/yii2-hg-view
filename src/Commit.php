@@ -4,6 +4,8 @@ namespace HgView;
 use DateTime;
 use HgView\Diff;
 use VcsCommon\BaseCommit;
+use VcsCommon\exception\CommonException;
+use VcsCommon\File;
 use yii\helpers\StringHelper;
 
 /**
@@ -93,5 +95,38 @@ class Commit extends BaseCommit
 
         // if hasnt parents - return as empty file
         return '';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getChangedFilesInternal()
+    {
+        $wrapper = $this->repository->wrapper;
+
+        // get changed files
+        $files = $wrapper->execute([
+            'status', '--encoding' => 'utf-8', '--change' => escapeshellcmd($this->getId()),
+        ], $this->repository->projectPath, true);
+        foreach ($files as $file) {
+            $pieces = preg_split('#[\s]+#', trim($file), 2);
+            if (count($pieces) === 2) {
+                $status = File::STATUS_UNKNOWN;
+                switch ($pieces[0]) {
+                    case 'M':
+                        $status = File::STATUS_MODIFIED;
+                        break;
+                    case 'A':
+                    case '?':
+                        $status = File::STATUS_ADDITION;
+                        break;
+                    case 'R':
+                    case '!':
+                        $status = File::STATUS_DELETION;
+                        break;
+                }
+                yield $pieces[1] => $status;
+            }
+        }
     }
 }

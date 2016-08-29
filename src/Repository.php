@@ -155,31 +155,6 @@ class Repository extends BaseRepository
             'message' => $message,
         ]);
 
-        // get changed files
-        $files = $this->wrapper->execute([
-            'status', '--encoding' => 'utf-8', '--change' => escapeshellcmd($commit->getId()),
-        ], $this->projectPath, true);
-        foreach ($files as $file) {
-            $pieces = preg_split('#[\s]+#', trim($file), 2);
-            if (count($pieces) === 2) {
-                $status = File::STATUS_UNKNOWN;
-                switch ($pieces[0]) {
-                    case 'M':
-                        $status = File::STATUS_MODIFIED;
-                        break;
-                    case 'A':
-                    case '?':
-                        $status = File::STATUS_ADDITION;
-                        break;
-                    case 'R':
-                    case '!':
-                        $status = File::STATUS_DELETION;
-                        break;
-                }
-                $commit->appendChangedFile($pieces[1], $status);
-            }
-        }
-
         return $commit;
     }
 
