@@ -176,11 +176,7 @@ class Repository extends BaseRepository
                         $status = File::STATUS_DELETION;
                         break;
                 }
-                $commit->appendChangedFile(new File(
-                    $this->projectPath . DIRECTORY_SEPARATOR . $pieces[1],
-                    $this,
-                    $status
-                ));
+                $commit->appendChangedFile($pieces[1], $status);
             }
         }
 
