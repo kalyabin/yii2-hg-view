@@ -32,7 +32,7 @@ class HgWrapper extends BaseWrapper
      */
     public function checkVersion()
     {
-        $pattern = '#version[\s]([\d]+\.?([\d]+)?\.([\d]+)?)#';
+        $pattern = '#[\s]([\d]+\.?([\d]+)?\.([\d]+)?)#';
 
         $result = $this->execute('version');
         if (!preg_match($pattern, $result, $matches)) {
