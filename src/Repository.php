@@ -146,6 +146,16 @@ class Repository extends BaseRepository
         // explode parents
         $parents = $this->prepareParentsIds($parents);
 
+        if (empty($parents)) {
+            /**
+             * @todo run hg parents if empty parents log list
+             */
+            $command = [
+                'parents', '--encoding' => 'utf-8', '--template' => '"{rev}\n"',
+            ];
+            $parents = $this->wrapper->execute($command, $this->projectPath, true);
+        }
+
         $commit = new Commit($this, [
             'id' => $id,
             'parentsId' => $parents,
