@@ -30,7 +30,7 @@ class Diff extends BaseDiff
                 }
 
                 if (StringHelper::startsWith($row, 'Binary files')) {
-                    // stop parsing if diff is parsing
+                    // stop parsing if diff is binary
                     $this->isBinary = true;
                     break;
                 }
@@ -43,6 +43,11 @@ class Diff extends BaseDiff
                 else if (preg_match('#^\+\+\+[\s]b(.*)$#i', $row, $matches)) {
                     $this->newFilePath = $matches[1];
                 }
+            }
+            else if ($n == 3 && StringHelper::startsWith($row, 'GIT binary patch')) {
+                // stop parsing if diff is binary
+                $this->isBinary = true;
+                break;
             }
             else if (StringHelper::startsWith($row, '@@')) {
                 // new diff line

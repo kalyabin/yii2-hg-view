@@ -76,7 +76,10 @@ class Commit extends BaseCommit
      */
     public function getRawBinaryFile($filePath, $streamHandler)
     {
-        throw new CommonException('This function is not supported');
+        $params = [
+            'cat', '--encoding' => 'utf-8', '--rev' => $this->id, escapeshellcmd($filePath),
+        ];
+        $this->repository->getWrapper()->executeBinary($streamHandler, $params, $this->repository->getProjectPath());
     }
 
     /**

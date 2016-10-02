@@ -28,5 +28,11 @@ return [
         'rawFile' => 'Directory.php',
         'deletedCommitId' => '1183',
         'deletedRawFile' => 'personal/ordercheck/cancel/index.php',
+        'binaryTest' => [
+            'projectPath' => '/path/to/hg/project',
+            'commitId' => 'commit_id',
+            'filePath' => '/path/to/binary/file',
+            'fileSize' => 63969,
+        ],
     ],
 ];

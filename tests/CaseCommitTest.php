@@ -147,4 +147,22 @@ class CaseCommitTest extends PHPUnit_Framework_TestCase
         $rawFile = $commit->getPreviousRawFile($this->variables['deletedRawFile']);
         $this->assertInternalType('string', $rawFile);
     }
+
+    /**
+     * Tests binary binary file
+     */
+    public function testBinary()
+    {
+        $wrapper = new HgWrapper();
+
+        $fileSize = $this->variables['binaryTest']['fileSize'];
+
+        $repository = $wrapper->getRepository($this->variables['binaryTest']['projectPath']);
+        $commit = $repository->getCommit($this->variables['binaryTest']['commitId']);
+        $commit->getRawBinaryFile($this->variables['binaryTest']['filePath'], function($data) use (&$fileSize) {
+            $fileSize -= strlen($data);
+        });
+
+        $this->assertEquals(0, $fileSize);
+    }
 }
