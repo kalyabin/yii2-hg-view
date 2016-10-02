@@ -151,7 +151,7 @@ class Repository extends BaseRepository
              * @todo run hg parents if empty parents log list
              */
             $command = [
-                'parents', '--encoding' => 'utf-8', '--template' => '"{rev}\n"',
+                'parents', '--rev' => $id, '--template' => '"{rev}\n"',
             ];
             $parents = $this->wrapper->execute($command, $this->projectPath, true);
         }
