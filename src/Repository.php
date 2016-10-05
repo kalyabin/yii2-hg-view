@@ -254,6 +254,10 @@ class Repository extends BaseRepository
 
     /**
      * @inheritdoc
+     *
+     * @todo fix graph level
+     * all commits at null-level, because -G (graph) hg option
+     * uses if it's enabled at config
      */
     public function getGraphHistory($limit, $skip, $path = null)
     {
@@ -261,6 +265,8 @@ class Repository extends BaseRepository
 
         $rawHistory = $this->getHistory($limit, $skip);
 
+        // attempt to use -G option
+        // if it will be fail - return null-level history
         $command = [
             'log', '--encoding' => 'utf-8', '-G', '--template' => ' ', '--limit' => (int) $limit,
         ];
@@ -275,13 +281,22 @@ class Repository extends BaseRepository
             $command['--rev'] = $fromRevision . ':0';
         }
 
-        $result = $this->wrapper->execute($command, $this->projectPath, true);
+        try {
+            $result = $this->wrapper->execute($command, $this->projectPath, true);
+        } catch (CommonException $ex) {
+            foreach ($rawHistory as $commit) {
+                $commit->graphLevel = 0;
+                $ret->pushCommit($commit);
+            }
+
+            return $ret;
+        }
 
         $cursor = 0;
         foreach ($result as $row) {
             $row = str_replace(' ', '', $row);
             if (strpos($row, 'o') !== false && isset($rawHistory[$cursor])) {
-                $rawHistory[$cursor]->graphLevel = strpos($row, '*');
+                $rawHistory[$cursor]->graphLevel = strpos($row, 'o');
                 $ret->pushCommit($rawHistory[$cursor]);
                 $cursor++;
             }
