@@ -122,30 +122,67 @@ class CaseCommitTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test commit raw file
+     * Test commit new raw file
      *
      * @depends testCommitDiff
-     * @param Commit $commit
      */
-    public function testCommitRawFile(Commit $commit)
+    public function testCommitNewRawFile()
     {
-        $this->assertInternalType('string', $commit->getFileStatus($this->variables['rawFile']));
-        $rawFile = $commit->getRawFile($this->variables['rawFile']);
+        $newFileCommitId = $this->variables['rawFileNew']['commitId'];
+        $newFilePath = $this->variables['rawFileNew']['file'];
+
+        $commit = $this->repository->getCommit($newFileCommitId);
+        $rawFile = $commit->getRawFile($newFilePath);
         $this->assertInternalType('string', $rawFile);
+        $this->assertEquals($commit->getFileStatus($newFilePath), File::STATUS_ADDITION);
     }
 
     /**
-     * Test deleted raw file
+     * Test commit deleted raw file
      *
-     * @depends testCommitRawFile
+     * @depends testCommitNewRawFile
      */
     public function testCommitDeletedRawFile()
     {
-        $commit = $this->repository->getCommit($this->variables['deletedCommitId']);
-        $this->assertInstanceOf(Commit::className(), $commit);
-        $this->assertEquals('D', $commit->getFileStatus($this->variables['deletedRawFile']));
-        $rawFile = $commit->getPreviousRawFile($this->variables['deletedRawFile']);
+        $deletedFileCommitId = $this->variables['rawFileDeleted']['commitId'];
+        $deletedFilePath = $this->variables['rawFileDeleted']['file'];
+
+        $commit = $this->repository->getCommit($deletedFileCommitId);
+        $rawFile = $commit->getPreviousRawFile($deletedFilePath);
         $this->assertInternalType('string', $rawFile);
+        $this->assertEquals($commit->getFileStatus($deletedFilePath), File::STATUS_DELETION);
+    }
+
+    /**
+     * Test commit updated raw file
+     *
+     * @depends testCommitDeletedRawFile
+     */
+    public function testCommitUpdatedRawFile()
+    {
+        $updatedFileCommitId = $this->variables['rawFileUpdated']['commitId'];
+        $updatedFilePath = $this->variables['rawFileUpdated']['file'];
+
+        $commit = $this->repository->getCommit($updatedFileCommitId);
+        $rawFile = $commit->getRawFile($updatedFilePath);
+        $this->assertInternalType('string', $rawFile);
+        $this->assertEquals($commit->getFileStatus($updatedFilePath), File::STATUS_MODIFIED);
+    }
+
+    /**
+     * Test commit not updated raw file
+     *
+     * @depends testCommitUpdatedRawFile
+     */
+    public function testCommitNotUpdatedRawFile()
+    {
+        $notUpdatedFileCommitId = $this->variables['rawFileNotUpdated']['commitId'];
+        $notUpdatedFilePath =$this->variables['rawFileNotUpdated']['file'];
+
+        $commit = $this->repository->getCommit($notUpdatedFileCommitId);
+        $rawFile = $commit->getRawFile($notUpdatedFilePath);
+        $this->assertInternalType('string', $rawFile);
+        $this->assertNull($commit->getFileStatus($notUpdatedFilePath));
     }
 
     /**
@@ -153,12 +190,9 @@ class CaseCommitTest extends PHPUnit_Framework_TestCase
      */
     public function testBinary()
     {
-        $wrapper = new HgWrapper();
-
         $fileSize = $this->variables['binaryTest']['fileSize'];
 
-        $repository = $wrapper->getRepository($this->variables['binaryTest']['projectPath']);
-        $commit = $repository->getCommit($this->variables['binaryTest']['commitId']);
+        $commit = $this->repository->getCommit($this->variables['binaryTest']['commitId']);
         $commit->getRawBinaryFile($this->variables['binaryTest']['filePath'], function($data) use (&$fileSize) {
             $fileSize -= strlen($data);
         });
