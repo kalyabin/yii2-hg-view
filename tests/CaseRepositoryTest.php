@@ -146,6 +146,49 @@ class CaseRepositoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test branch history and all branches history
+     */
+    public function testBranchHistory()
+    {
+        // test commits for specified branch
+        foreach ($this->variables['branchHistory'] as $branch => $commitId) {
+            $commitsInOtherBranches = [];
+            foreach ($this->variables['branchHistory'] as $otherBranch => $otherCommitId) {
+                if ($otherBranch != $branch) {
+                    $commitsInOtherBranches[] = $otherCommitId;
+                }
+            }
+            $this->assertNotEmpty($commitsInOtherBranches);
+            $history = $this->repository->getHistory(1000, 0, null, $branch);
+            $this->assertNotEmpty($history);
+            $this->assertContainsOnlyInstancesOf(Commit::className(), $history);
+
+            $hasCommit = false;
+            foreach ($history as $commit) {
+                if ($commit->getId() == $commitId) {
+                    $hasCommit = true;
+                }
+                $this->assertNotContains($commit->getId(), $commitsInOtherBranches);
+            }
+            $this->assertTrue($hasCommit, "Branch $branch has no commit with: $commitId\n");
+        }
+
+        // test commits for all branches
+        $commitsForAllBranches = array_flip($this->variables['branchHistory']);
+        $history = $this->repository->getHistory(1000, 0, null, null);
+        $this->assertNotEmpty($history);
+        $this->assertContainsOnlyInstancesOf(Commit::className(), $history);
+        foreach ($history as $commit) {
+            if (isset($commitsForAllBranches[$commit->getId()])) {
+                unset ($commitsForAllBranches[$commit->getId()]);
+            } elseif (empty($commitsForAllBranches)) {
+                break;
+            }
+        }
+        $this->assertEmpty($commitsForAllBranches, "Not all branches in all branches history: " . print_r($commitsForAllBranches, true));
+    }
+
+    /**
      * Tests history wrong params
      *
      * @expectedException \VcsCommon\exception\CommonException

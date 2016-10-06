@@ -8,6 +8,11 @@ return [
     'repositoryUrl' => 'https://kalyabin@bitbucket.org/kalyabin/yii2-hg-view-testing',
     'repositoryPath' => __DIR__ . '/repo/testing-repo',
 
+    // type all branches of repository
+    'branches' => [
+        'default', 'branch1', 'branch2',
+    ],
+
     // variables for HgWrapper tests
     'wrapper' => [
         'availCmd' => 'hg',
@@ -29,6 +34,11 @@ return [
         'pathHistory' => 'testing.txt',
         'ignoredPath' => 'ignored.txt',
         'notIgnoredPath' => 'contributors.txt',
+        // type key as branch and value as commit id, wich branch contains
+        'branchHistory' => [
+            'branch2' => '22',
+            'branch1' => '21',
+        ],
     ],
 
     // variables for Commit tests

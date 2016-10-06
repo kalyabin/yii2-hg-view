@@ -194,7 +194,7 @@ class Repository extends BaseRepository
     /**
      * @inheritdoc
      */
-    public function getHistory($limit, $skip, $path = null)
+    public function getHistory($limit, $skip, $path = null, $branch = null)
     {
         $ret = [];
 
@@ -208,6 +208,10 @@ class Repository extends BaseRepository
         $command = [
             'log', '--encoding' => 'utf-8',
         ];
+
+        if (!is_null($branch)) {
+            $command['--branch'] = escapeshellcmd($branch);
+        }
 
         // detect begin revision number
         $fromRevision = $this->calculateBeginRevisionLog($skip);
@@ -259,7 +263,7 @@ class Repository extends BaseRepository
      * all commits at null-level, because -G (graph) hg option
      * uses if it's enabled at config
      */
-    public function getGraphHistory($limit, $skip, $path = null)
+    public function getGraphHistory($limit, $skip, $path = null, $branch = null)
     {
         $ret = new Graph();
 
@@ -271,6 +275,10 @@ class Repository extends BaseRepository
             'log', '--encoding' => 'utf-8', '-G', '--template' => ' ', '--limit' => (int) $limit,
         ];
 
+        if (!is_null($branch)) {
+            $command['--branch'] = escapeshellcmd($branch);
+        }
+
         // detect begin revision number
         $fromRevision = $this->calculateBeginRevisionLog((int) $skip);
         if ($fromRevision === -1) {
@@ -279,6 +287,10 @@ class Repository extends BaseRepository
         }
         else if (!is_null($fromRevision)) {
             $command['--rev'] = $fromRevision . ':0';
+        }
+
+        if (!empty($path)) {
+            $command[] = escapeshellcmd($path);
         }
 
         try {
