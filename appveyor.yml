@@ -31,4 +31,4 @@ before_test:
   - hg --version
   - php --version
 test_script:
-  - php vendor/bin/phpunit
+  - php vendor\bin\phpunit
