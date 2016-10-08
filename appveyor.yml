@@ -26,9 +26,10 @@ install:
   - cd %APPVEYOR_BUILD_FOLDER%
   - appveyor DownloadFile https://getcomposer.org/composer.phar
   - php composer.phar config -g github-oauth.github.com %GITHUB_PUBLIC_TOKEN%
-  - php composer.phar global require "fxp/composer-asset-plugin:~1.2.0" --no-interaction --no-progress --quiet
-  - php composer.phar update --no-interaction --prefer-dist --no-progress --quiet
+  - php composer.phar global require "fxp/composer-asset-plugin:~1.2.0" --no-interaction --no-ansi --no-progress --quiet
+  - php composer.phar update --no-interaction --prefer-dist --no-ansi --no-progress --quiet
 before_test:
+  - php tests/create_repository.php
   - hg --version
   - php --version
 test_script:
