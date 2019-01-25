@@ -38,7 +38,7 @@ class CaseWrapperTest extends PHPUnit_Framework_TestCase
         $wrapper = new HgWrapper([
             'cmd' => $cmd,
         ]);
-        $this->assertInstanceOf(HgWrapper::className(), $wrapper);
+        $this->assertInstanceOf(HgWrapper::class, $wrapper);
         $this->assertEquals($cmd, $wrapper->getCmd());
 
         // set variables without constructor
@@ -120,7 +120,7 @@ class CaseWrapperTest extends PHPUnit_Framework_TestCase
 
         $wrapper->setCmd($cmd);
         $repository = $wrapper->getRepository($repoPath);
-        $this->assertInstanceOf(Repository::className(), $repository);
+        $this->assertInstanceOf(Repository::class, $repository);
     }
 
     /**
